@@ -1,8 +1,4 @@
 pipeline:
-  build-apps:
-    image: node:12
-    commands:
-      - yarn build
   publish:
     image: plugins/ecr
     when:
@@ -12,16 +8,35 @@ pipeline:
     build_args: "VERSION=${DRONE_TAG##v}"
     tag:
       - ${DRONE_TAG##v}
+
   mark-as-latest-if-stable:
     image: plugins/webhook
     when:
       event: tag
     urls: http://releases.ingress.vtex.io/latest-if-stable/cs-drone-poc/${DRONE_TAG##v}
     method: PATCH
+
+  register:
+    image: vtexlab/drone-webhook
+    debug: true
+    when:
+      event: tag
+    urls:
+      - http://router.aws-us-east-1.vtex.io/_services
+    environment:
+      HTTP_PROXY: io-integrations.internal.aws-us-east-1.vtex.io
+    template: >
+      {
+        "name": "cs-drone-poc",
+        "version": "${DRONE_TAG##v}",
+        "image": "558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:${DRONE_TAG##v}",
+        "region": "aws-us-east-1",
+      }
+
   notify:
     image: plugins/slack
     template: "*{{Build.Status}}*: <{{Build.Link}}|{{Repo.Owner}}/{{Repo.Name}}> (${DRONE_TAG##v}) by {{Build.Author}}"
-    webhook: https://hooks.slack.com/services/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
+    webhook: https://hooks.slack.com/services/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
     when:
       event: tag
       status: [success, failure]
