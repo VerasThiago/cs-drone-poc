@@ -1,15 +1,15 @@
 pipeline:
+  build:
+    image: node:12
+    commands:
+      - yarn build
+
   test:
     image: node:12
     commands:
       - yarn test
 
-  build-apps:
-    image: node:12
-    commands:
-      - yarn build
-
-  publish-apps:
+  publish:
     image: plugins/ecr
     when:
       event: tag
@@ -27,7 +27,7 @@ pipeline:
     urls: http://releases.ingress.vtex.io/latest-if-stable/cs-drone-poc/${DRONE_TAG##v}
     method: PATCH
 
-  register-apps:
+  register:
     image: plugins/webhook
     when:
       event: tag
@@ -37,7 +37,7 @@ pipeline:
       HTTP_PROXY: io-integrations.internal.aws-us-east-1.vtex.io
     template: >
       {
-        "name": "apps",
+        "name": "cs-drone-poc",
         "version": "${DRONE_TAG##v}",
         "image": "558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:${DRONE_TAG##v}",
         "region": "aws-us-east-1",
@@ -45,7 +45,7 @@ pipeline:
           "monitored": "true"
         }
       }
-  notify-apps:
+  notify:
     image: plugins/webhook
     when:
       event: tag
