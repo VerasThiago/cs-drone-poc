@@ -5,7 +5,7 @@ pipeline:
     commands:
       - yarn
       
-  build:
+  build-project:
     image: node:12
     commands:
       - yarn build
@@ -14,15 +14,15 @@ pipeline:
     image: node:12
     commands:
       - yarn test
-
-  publish:
+  build-image-and-publish:
     image: plugins/ecr
     when:
       event: tag
     region: us-east-1
     repo: 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc
-    tag:
-      - ${DRONE_TAG##v}
+    commands:
+      - docker build --rm=true -f Dockerfile -t 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:${DRONE_TAG##v} . --pull=true --label 
+      - docker push 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc::${DRONE_TAG##v}
 
   mark-as-latest-if-stable:
     image: plugins/webhook
