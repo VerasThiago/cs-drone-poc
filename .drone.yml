@@ -1,11 +1,5 @@
 pipeline:
-
-  install-dependencies:
-    image: node:12
-    commands:
-      - yarn
-      
-  build-project:
+  build:
     image: node:12
     commands:
       - yarn build
@@ -14,13 +8,17 @@ pipeline:
     image: node:12
     commands:
       - yarn test
-      
+
   publish:
-    image: docker
+    image: plugins/ecr
     when:
       event: tag
+    region: us-east-1
+    repo: 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc
+    tag:
+      - ${DRONE_TAG##v}
     commands:
-      - docker run -v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/workspace -w /workspace buildpacksio/pack build 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:0.0.0 --builder gcr.io/buildpacks/builder:v1 
+      - docker run verasthiago/docker-hello-world
 
   mark-as-latest-if-stable:
     image: plugins/webhook
