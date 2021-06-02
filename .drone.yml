@@ -15,12 +15,12 @@ pipeline:
     commands:
       - yarn test
       
-  build-image-and-publish:
-    image: buildpacksio/pack:latest
+  publish:
+    image: docker
     when:
       event: tag
     commands:
-      - build 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc::${DRONE_TAG##v} --builder gcr.io/buildpacks/builder:v1 
+      - docker run -v /var/run/docker.sock:/var/run/docker.sock -v $PWD:/workspace -w /workspace buildpacksio/pack build 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:0.0.0 --builder gcr.io/buildpacks/builder:v1 
 
   mark-as-latest-if-stable:
     image: plugins/webhook
