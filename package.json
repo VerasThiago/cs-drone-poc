@@ -9,7 +9,7 @@
     "format-lint": "yarn format && yarn lint:node",
     "build-clean": "rm -rf build",
     "build": "yarn build-clean && yarn tsc",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "prepublishOnly": "bash ./scripts/publishLock.sh",
     "ci:test": "yarn test --passWithNoTests --ci",
     "start": "yarn build && node build/index.js",
