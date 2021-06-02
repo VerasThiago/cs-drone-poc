@@ -23,8 +23,6 @@ pipeline:
     repo: 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc
     tag:
       - ${DRONE_TAG##v}
-    context: .
-    dockerfile: ./Dockerfile
 
   mark-as-latest-if-stable:
     image: plugins/webhook
