@@ -20,7 +20,7 @@ pipeline:
     when:
       event: tag
     commands:
-      - build
+      - build 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc::${DRONE_TAG##v} --builder gcr.io/buildpacks/builder:v1 
 
   mark-as-latest-if-stable:
     image: plugins/webhook
