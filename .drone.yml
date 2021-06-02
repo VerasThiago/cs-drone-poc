@@ -14,11 +14,13 @@ pipeline:
     image: node:12
     commands:
       - yarn test
+      
   build-image-and-publish:
     image: buildpacksio/pack:latest
     when:
+      event: tag
     commands:
-      - build 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc::${DRONE_TAG##v} --builder gcr.io/buildpacks/builder:v1 
+      - build
 
   mark-as-latest-if-stable:
     image: plugins/webhook
