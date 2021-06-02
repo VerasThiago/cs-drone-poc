@@ -15,14 +15,10 @@ pipeline:
     commands:
       - yarn test
   build-image-and-publish:
-    image: plugins/ecr
+    image: buildpacksio/pack:latest
     when:
-      event: tag
-    region: us-east-1
-    repo: 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc
     commands:
-      - docker build --rm=true -f Dockerfile -t 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:${DRONE_TAG##v} . --pull=true --label 
-      - docker push 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc::${DRONE_TAG##v}
+      - build 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc::${DRONE_TAG##v} --builder gcr.io/buildpacks/builder:v1 
 
   mark-as-latest-if-stable:
     image: plugins/webhook
