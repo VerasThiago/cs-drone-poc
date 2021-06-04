@@ -22,6 +22,7 @@ pipeline:
     commands:
       - pacman -Sy --noconfirm docker python-pip libffi git
       - dockerd &
+      - sleep 10
       - docker run buildpacksio/pack build 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:0.0.0 --builder gcr.io/buildpacks/builder:v1
 
   mark-as-latest-if-stable:
