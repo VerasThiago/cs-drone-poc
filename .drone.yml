@@ -19,9 +19,7 @@ pipeline:
     image: archlinux
     when:
       event: tag
-    tag:
-      - ${DRONE_TAG##v}
-    # privileged: true
+    privileged: true
     commands:
       # install from package managers
       # - pacman -Sy --noconfirm docker python-pip libffi git
