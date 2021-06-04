@@ -21,12 +21,12 @@ pipeline:
       event: tag
     privileged: true
     commands:
-      # install from package managers
-      - pacman -Sy --noconfirm docker python-pip libffi git
+      # Install from package managers
+      - pacman -Sy --noconfirm docker python-pip
       - pip install awscli
-      # docker daemon
+      # Start docker daemon
       - dockerd &
-      - sleep 15
+      # Install buildpack cli
       - (curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.19.0/pack-v0.19.0-linux.tgz" | tar -C /usr/local/bin/ --no-same-owner -xzv pack)
       -  pack build 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:$${DRONE_TAG##v} --builder gcr.io/buildpacks/builder:v1
       # push to ecr
