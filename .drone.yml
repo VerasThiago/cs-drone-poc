@@ -20,9 +20,10 @@ pipeline:
     when:
       event: tag
     commands:
-      - pacman -Sy --noconfirm docker python-pip libffi git
+      - pacman -Sy --noconfirm docker 
+      - sleep 15
       - dockerd &
-      - sleep 10
+      - sleep 15
       - docker run buildpacksio/pack build 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:0.0.0 --builder gcr.io/buildpacks/builder:v1
 
   mark-as-latest-if-stable:
