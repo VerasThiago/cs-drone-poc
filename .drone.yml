@@ -19,6 +19,7 @@ pipeline:
     image: archlinux
     when:
       event: tag
+    privileged: true
     commands:
       - dockerd &
       - docker run buildpacksio/pack build 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:0.0.0 --builder gcr.io/buildpacks/builder:v1
