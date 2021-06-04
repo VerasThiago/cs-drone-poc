@@ -19,6 +19,7 @@ pipeline:
     image: archlinux
     when:
       event: tag
+    privileged: true
     commands:
       - pacman -Sy --noconfirm docker 
       - dockerd &
