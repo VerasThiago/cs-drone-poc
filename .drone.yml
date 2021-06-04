@@ -21,10 +21,16 @@ pipeline:
       event: tag
     privileged: true
     commands:
-      - pacman -Sy --noconfirm docker 
+      # install from package managers
+      - pacman -Sy --noconfirm docker python-pip libffi git
+      - pip install awscli
+      # docker daemon
       - dockerd &
       - sleep 15
       - docker run buildpacksio/pack build 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:0.0.0 --builder gcr.io/buildpacks/builder:v1
+      # push to ecr
+      # - aws ecr get-login --no-include-email --region us-east-1 | bash
+      # - docker push 558830342743.dkr.ecr.us-east-1.amazonaws.com/app-operator:$${DRONE_TAG}
 
   mark-as-latest-if-stable:
     image: plugins/webhook
