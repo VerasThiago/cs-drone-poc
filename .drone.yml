@@ -1,4 +1,10 @@
 pipeline:
+
+  install-dependencies:
+    image: node:12
+    commands:
+      - yarn
+
   build:
     image: node:12
     commands:
