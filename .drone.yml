@@ -22,7 +22,7 @@ pipeline:
     privileged: true
     commands:
       # install from package managers
-      - pacman -Sy --noconfirm docker
+      - pacman -Sy --noconfirm docker python-pip libffi git
       - pip install awscli
       # docker daemon
       - dockerd &
