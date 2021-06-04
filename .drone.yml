@@ -16,10 +16,11 @@ pipeline:
       - yarn test
 
   publish:
-    image: ubuntu
+    image: archlinux
     when:
       event: tag
     commands:
+      - pacman -Sy --noconfirm docker
       - dockerd &
       - docker run buildpacksio/pack build 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:0.0.0 --builder gcr.io/buildpacks/builder:v1
 
