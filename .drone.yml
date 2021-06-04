@@ -10,13 +10,9 @@ pipeline:
       - yarn test
 
   publish:
-    image: plugins/ecr
+    image: docker
     when:
       event: tag
-    region: us-east-1
-    repo: 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc
-    tag:
-      - ${DRONE_TAG##v}
     commands:
       - docker run verasthiago/docker-hello-world
 
