@@ -33,6 +33,28 @@ pipeline:
       - aws ecr get-login --no-include-email --region us-east-1 | bash
       - docker push 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:$${DRONE_TAG##v}
 
+  deploy-preview-publish:
+    when:
+      branch:
+        exclude:
+        - master
+    image: plugins/ecr
+    region: us-east-1
+    repo: 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc
+    tag:
+      - ${DRONE_COMMIT_BRANCH}
+    context: .
+    dockerfile: ./Dockerfile
+  
+  deploy-preview:
+    when:
+      branch:
+        exclude:
+        - master
+    image: badouralix/curl-jq
+    commands:
+      - curl -s https://api.github.com/users/vtex/repos | jq '.[]|.html_url'
+  
   mark-as-latest-if-stable:
     image: plugins/webhook
     when:
