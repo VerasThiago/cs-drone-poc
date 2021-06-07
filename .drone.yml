@@ -1,0 +1,62 @@
+pipeline:
+
+  install-dependencies:
+    image: node:12
+    commands:
+      - yarn
+      
+  build:
+    image: node:12
+    commands:
+      - yarn build
+
+  test:
+    image: node:12
+    commands:
+      - yarn ci:test
+
+  publish:
+    image: plugins/ecr
+    when:
+      event: tag
+    region: us-east-1
+    repo: 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc
+    tag:
+      - ${DRONE_TAG##v}
+    context: .
+    dockerfile: ./Dockerfile
+
+  mark-as-latest-if-stable:
+    image: plugins/webhook
+    when:
+      event: tag
+    urls: http://releases.ingress.vtex.io/latest-if-stable/cs-drone-poc/${DRONE_TAG##v}
+    method: PATCH
+
+  register:
+    image: plugins/webhook
+    when:
+      event: tag
+    urls: http://router.aws-us-east-1.vtex.io/_services
+    valid_response_codes: [200, 204]
+    environment:
+      HTTP_PROXY: io-integrations.internal.aws-us-east-1.vtex.io
+    template: >
+      {
+        "name": "cs-drone-poc",
+        "version": "${DRONE_TAG##v}",
+        "image": "558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:${DRONE_TAG##v}",
+        "region": "aws-us-east-1",
+        "labels": {
+          "monitored": "true"
+        }
+      }
+  notify:
+    image: plugins/webhook
+    when:
+      event: tag
+      status: [success, failure]
+    urls: https://vtex.myvtex.com/_v/drone-notifications/notify
+    valid_response_codes: [200, 204]
+    username: drone
+    password: YzNWd1pYSnpaV055WlhSd1lYTnpkMjl5WkdsbVptOTFibVJqWVd4c09UUXdNekV3TWpBPQ==
