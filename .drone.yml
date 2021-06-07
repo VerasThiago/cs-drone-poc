@@ -26,6 +26,31 @@ pipeline:
     context: .
     dockerfile: ./Dockerfile
 
+  deploy-preview:
+    image: badouralix/curl-jq
+    commands:
+      - echo BEFORE TEST=$TEST
+      - export TEST=$(jq -rn --arg x '${DRONE_COMMIT_BRANCH}' '$x|@uri')
+      - echo AFTER TEST=$TEST
+      # - curl -s https://api.github.com/users/vtex/repos | jq '.[]|.html_url'
+
+  deploy-preview-after:
+    image: badouralix/curl-jq
+    commands:
+      - echo AFTER TEST=$TEST
+      - echo AFTER2 TEST=${TEST}
+      - echo AFTER3 TEST=$(TEST)
+      
+  # deploy-preview-publish:
+  #   image: plugins/ecr
+  #   region: us-east-1
+  #   repo: 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc
+  #   tag:
+  #     - ${TEST}
+  #   context: .
+  #   dockerfile: ./Dockerfile
+  
+  
   mark-as-latest-if-stable:
     image: plugins/webhook
     when:
