@@ -4,27 +4,34 @@ pipeline:
     image: node:12
     commands:
       - yarn
-      
-  build:
+
+  build-app:
     image: node:12
     commands:
       - yarn build
 
-  test:
+  test-app:
     image: node:12
     commands:
       - yarn ci:test
 
-  publish:
-    image: plugins/ecr
+  build-image-and-publish:
+    image: archlinux
     when:
       event: tag
-    region: us-east-1
-    repo: 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc
-    tag:
-      - ${DRONE_TAG##v}
-    context: .
-    dockerfile: ./Dockerfile
+    privileged: true
+    commands:
+      # Install from package managers
+      - pacman -Sy --noconfirm docker python-pip
+      - pip install awscli
+      # Start docker daemon
+      - dockerd &
+      # Install buildpack cli
+      - (curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.19.0/pack-v0.19.0-linux.tgz" | tar -C /usr/local/bin/ --no-same-owner -xzv pack)
+      -  pack build 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:$${DRONE_TAG##v} --builder gcr.io/buildpacks/builder:v1
+      # push to ecr
+      - aws ecr get-login --no-include-email --region us-east-1 | bash
+      - docker push 558830342743.dkr.ecr.us-east-1.amazonaws.com/cs-drone-poc:$${DRONE_TAG##v}
 
   mark-as-latest-if-stable:
     image: plugins/webhook
