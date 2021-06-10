@@ -20,6 +20,9 @@ export class WebServer {
     this.router.get('/user', userHandler)
     this.router.get('/secret', secretHandler)
     this.router.get('/healthcheck', healthHandler)
+    this.router.get('/demo', (ctx) => {
+      ctx.body = 'testing service'
+    })
     this.router.get('/(.*)', (ctx) => {
       ctx.body = 'Default route!'
     })
