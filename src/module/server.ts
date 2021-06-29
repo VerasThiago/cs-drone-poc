@@ -27,7 +27,7 @@ export class WebServer {
 
   private async setPort() {
     const port = await getPort({
-      port: getPort.makeRange(5000, 5000),
+      port: getPort.makeRange(3000, 3000),
     })
 
     this.port = port
